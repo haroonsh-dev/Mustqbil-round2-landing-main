@@ -201,13 +201,16 @@ function LoginComponent() {
             </Button>
           </div>
         </CardContent>
-        <CardFooter className="text-center justify-center border-t border-border/50 pt-4">
-          <p className="text-xs text-muted-foreground">
-            Don't have a workspace yet?{" "}
-            <Link to="/signup" className="text-primary hover:underline font-semibold">
-              Create free trial
-            </Link>
+        <CardFooter className="flex flex-col gap-3 border-t border-border/50 pt-5">
+          <p className="text-xs text-muted-foreground text-center">
+            Don't have an account yet?
           </p>
+          <Link
+            to="/signup"
+            className="w-full inline-flex h-10 items-center justify-center rounded-md border border-primary/30 bg-primary/5 text-sm font-semibold text-primary hover:bg-primary/10 transition-colors"
+          >
+            Create a free account
+          </Link>
         </CardFooter>
       </Card>
     </div>
