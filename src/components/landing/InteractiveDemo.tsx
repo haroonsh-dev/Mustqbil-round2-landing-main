@@ -164,13 +164,13 @@ export function InteractiveDemo() {
             <select
               value={newTaskPriority}
               onChange={(e) => setNewTaskPriority(e.target.value as "low" | "medium" | "high")}
-              className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs focus:outline-none focus:ring-1 focus:ring-ring"
+              className="h-9 w-full sm:w-auto rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs focus:outline-none focus:ring-1 focus:ring-ring"
             >
               <option value="low">Low Priority</option>
               <option value="medium">Medium Priority</option>
               <option value="high">High Priority</option>
             </select>
-            <Button type="submit" size="sm" className="h-9 gap-1 shadow-xs cursor-pointer">
+            <Button type="submit" size="sm" className="h-9 w-full sm:w-auto gap-1 shadow-xs cursor-pointer">
               <Plus className="h-4 w-4" /> Add Task
             </Button>
           </form>

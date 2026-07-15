@@ -34,7 +34,7 @@ export function StaticBoardPreview() {
         {/* Dashboard Content */}
         <div className="p-4 bg-background min-h-[300px] text-left">
           <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-border/60 pb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border/60 pb-3 gap-2">
               <div>
                 <h3 className="text-base font-bold">Active Sprint: Iteration 24</h3>
                 <p className="text-xs text-muted-foreground">

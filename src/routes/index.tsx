@@ -34,7 +34,7 @@ function Index() {
         <div className="reveal border-y border-border bg-[#F4F4F5] dark:bg-muted/5 py-20 overflow-hidden relative w-full logo-ticker-container">
           <div className="logo-ticker-track flex items-center">
             {/* Set 1 */}
-            <div className="flex gap-16 shrink-0 items-center justify-around pr-16 text-sm font-semibold tracking-wider text-muted-foreground/60 uppercase">
+            <div className="flex gap-8 md:gap-16 shrink-0 items-center justify-around pr-8 md:pr-16 text-xs md:text-sm font-semibold tracking-wider text-muted-foreground/60 uppercase">
               <span>Stripe</span>
               <span>Vercel</span>
               <span>Airbnb</span>
@@ -45,7 +45,7 @@ function Index() {
               <span>Supabase</span>
             </div>
             {/* Set 2 (Duplicated for seamless loop) */}
-            <div className="flex gap-16 shrink-0 items-center justify-around pr-16 text-sm font-semibold tracking-wider text-muted-foreground/60 uppercase">
+            <div className="flex gap-8 md:gap-16 shrink-0 items-center justify-around pr-8 md:pr-16 text-xs md:text-sm font-semibold tracking-wider text-muted-foreground/60 uppercase">
               <span>Stripe</span>
               <span>Vercel</span>
               <span>Airbnb</span>
