@@ -170,7 +170,7 @@ export function InteractiveDemo() {
               <option value="medium">Medium Priority</option>
               <option value="high">High Priority</option>
             </select>
-            <Button type="submit" size="sm" className="h-9 w-full sm:w-auto gap-1 shadow-xs cursor-pointer">
+            <Button type="submit" size="sm" className="h-9 w-full sm:w-auto gap-1 shadow-xs cursor-pointer" disabled={!newTaskTitle.trim()}>
               <Plus className="h-4 w-4" /> Add Task
             </Button>
           </form>
