@@ -1,4 +1,4 @@
-type EventName = 'cta_click' | 'form_submit' | 'page_view';
+type EventName = 'cta_click' | 'form_submit' | 'page_view' | 'demo_action';
 
 export function trackEvent(eventName: EventName, properties: Record<string, any> = {}) {
   try {

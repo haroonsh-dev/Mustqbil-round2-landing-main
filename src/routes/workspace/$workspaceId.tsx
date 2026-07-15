@@ -24,7 +24,7 @@ export const Route = createFileRoute("/workspace/$workspaceId")({
 
 function WorkspaceComponent() {
   const { workspaceId } = Route.useParams();
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useAuth();
   const [boards, setBoards] = useState<Board[]>([]);
   const [isLoadingBoards, setIsLoadingBoards] = useState(true);
   const [newBoardName, setNewBoardName] = useState("");
@@ -69,7 +69,7 @@ function WorkspaceComponent() {
     }
   }
 
-  if (loading || isLoadingBoards) {
+  if (isLoading || isLoadingBoards) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />

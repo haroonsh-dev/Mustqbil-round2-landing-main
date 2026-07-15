@@ -24,7 +24,7 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function DashboardComponent() {
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useAuth();
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [isLoadingWorkspaces, setIsLoadingWorkspaces] = useState(true);
   const [newWorkspaceName, setNewWorkspaceName] = useState("");
@@ -64,7 +64,7 @@ function DashboardComponent() {
     }
   }
 
-  if (loading || isLoadingWorkspaces) {
+  if (isLoading || isLoadingWorkspaces) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -132,7 +132,7 @@ function DashboardComponent() {
 
           {/* List existing workspaces */}
           {workspaces.map((ws) => (
-            <Link key={ws.id} to={`/workspace/${ws.id}`} className="block h-full">
+            <Link key={ws.id} to="/workspace/$workspaceId" params={{ workspaceId: ws.id }} className="block h-full">
               <Card className="h-full hover:border-primary/50 transition-colors spotlight-card cursor-pointer">
                 <CardHeader>
                   <CardTitle className="text-xl">{ws.name}</CardTitle>
