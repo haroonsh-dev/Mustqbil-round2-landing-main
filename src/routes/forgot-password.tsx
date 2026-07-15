@@ -13,6 +13,7 @@ import { Layout, ArrowLeft, Sun, Moon } from "lucide-react";
 import { useState } from "react";
 import { useTheme } from "@/hooks/use-theme";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/forgot-password")({
   component: ForgotPasswordComponent,
@@ -24,18 +25,25 @@ function ForgotPasswordComponent() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleReset = (e: React.FormEvent) => {
+  const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
       toast.error("Please enter your email address");
       return;
     }
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    
+    setLoading(false);
+    if (error) {
+      toast.error(error.message);
+    } else {
       setSubmitted(true);
       toast.success("Password reset instructions sent.");
-    }, 1200);
+    }
   };
 
   return (
