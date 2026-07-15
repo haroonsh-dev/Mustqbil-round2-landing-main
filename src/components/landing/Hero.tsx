@@ -56,77 +56,63 @@ export function Hero() {
           backlogs, and ship code without clunky configuration tables.
         </p>
 
-        {user ? (
-          <div className="mt-10 flex justify-center">
+        <div className="mt-10 flex flex-col items-center justify-center">
+          <form
+            onSubmit={handleHeroSubmit}
+            className="flex w-full max-w-md flex-col gap-2 sm:flex-row"
+            aria-label="Hero trial sign-up"
+            noValidate
+          >
+            <div className="relative flex-grow">
+              <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                type="email"
+                placeholder="Enter your work email"
+                className={`h-11 pl-10 transition-all focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                  heroEmailError
+                    ? "border-destructive focus-visible:ring-destructive"
+                    : heroEmailSuccess
+                      ? "border-green-500 focus-visible:ring-green-500"
+                      : ""
+                }`}
+                value={heroEmail}
+                onChange={(e) => {
+                  setHeroEmail(e.target.value);
+                  if (heroEmailError) setHeroEmailError("");
+                }}
+                aria-invalid={!!heroEmailError}
+                aria-describedby={heroEmailError ? "hero-email-error" : undefined}
+                required
+              />
+            </div>
             <Button
+              type="submit"
               size="lg"
-              className="h-12 px-8 cursor-pointer font-bold shadow-md hover:scale-[1.02] transition-transform shimmer-button"
-              asChild
+              className="shrink-0 h-11 cursor-pointer font-semibold shadow-xs shimmer-button"
+              disabled={isSubmitting || heroEmailSuccess}
             >
-              <Link to="/">
-                Go to Dashboard
-              </Link>
+              {isSubmitting
+                ? "Connecting..."
+                : heroEmailSuccess
+                  ? "Signed Up!"
+                  : "Get started free"}
             </Button>
-          </div>
-        ) : (
-          <div className="mt-10 flex flex-col items-center justify-center">
-            <form
-              onSubmit={handleHeroSubmit}
-              className="flex w-full max-w-md flex-col gap-2 sm:flex-row"
-              aria-label="Hero trial sign-up"
-              noValidate
-            >
-              <div className="relative flex-grow">
-                <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  type="email"
-                  placeholder="Enter your work email"
-                  className={`h-11 pl-10 transition-all focus-visible:ring-2 focus-visible:ring-offset-2 ${
-                    heroEmailError
-                      ? "border-destructive focus-visible:ring-destructive"
-                      : heroEmailSuccess
-                        ? "border-green-500 focus-visible:ring-green-500"
-                        : ""
-                  }`}
-                  value={heroEmail}
-                  onChange={(e) => {
-                    setHeroEmail(e.target.value);
-                    if (heroEmailError) setHeroEmailError("");
-                  }}
-                  aria-invalid={!!heroEmailError}
-                  aria-describedby={heroEmailError ? "hero-email-error" : undefined}
-                  required
-                />
-              </div>
-              <Button
-                type="submit"
-                size="lg"
-                className="shrink-0 h-11 cursor-pointer font-semibold shadow-xs shimmer-button"
-                disabled={isSubmitting || heroEmailSuccess}
-              >
-                {isSubmitting
-                  ? "Connecting..."
-                  : heroEmailSuccess
-                    ? "Signed Up!"
-                    : "Get started free"}
-              </Button>
-            </form>
+          </form>
 
-            {heroEmailError && (
-              <p
-                id="hero-email-error"
-                className="mt-2 text-xs font-medium text-destructive text-left w-full max-w-md pl-2"
-              >
-                {heroEmailError}
-              </p>
-            )}
-            {heroEmailSuccess && (
-              <p className="mt-2 text-xs font-semibold text-green-600 dark:text-green-400 text-left w-full max-w-md pl-2">
-                ✓ Check your email! We've sent your setup link.
-              </p>
-            )}
-          </div>
-        )}
+          {heroEmailError && (
+            <p
+              id="hero-email-error"
+              className="mt-2 text-xs font-medium text-destructive text-left w-full max-w-md pl-2"
+            >
+              {heroEmailError}
+            </p>
+          )}
+          {heroEmailSuccess && (
+            <p className="mt-2 text-xs font-semibold text-green-600 dark:text-green-400 text-left w-full max-w-md pl-2">
+              ✓ Check your email! We've sent your setup link.
+            </p>
+          )}
+        </div>
         {/* Secondary text */}
         <p className="text-xs sm:text-sm text-muted-foreground font-medium mt-6">
           Built for focused product teams that want less admin and clearer sprint flow.
