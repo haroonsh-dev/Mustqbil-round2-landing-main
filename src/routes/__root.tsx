@@ -239,10 +239,13 @@ function RootComponent() {
       });
     }, observerOptions);
 
-    const elements = document.querySelectorAll(".reveal");
-    elements.forEach((el) => observer.observe(el));
+    const timeoutId = setTimeout(() => {
+      const elements = document.querySelectorAll(".reveal");
+      elements.forEach((el) => observer.observe(el));
+    }, 50);
 
     return () => {
+      clearTimeout(timeoutId);
       observer.disconnect();
     };
   }, [pathname]);
