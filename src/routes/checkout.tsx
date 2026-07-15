@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useSearch, redirect } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,13 +10,13 @@ import { Footer } from "@/components/landing/Footer";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/checkout")({
-  beforeLoad: ({ search, navigate }) => {
+  beforeLoad: ({ search }) => {
     const s = search as { plan?: string; cycle?: string };
     const validPlans = ["starter", "team", "business"];
     const validCycles = ["monthly", "annually"];
     if (!validPlans.includes(s.plan || "") || !validCycles.includes(s.cycle || "")) {
       // Segment 1: Invalid params redirect
-      throw navigate({ to: "/pricing", replace: true });
+      throw redirect({ to: "/pricing", replace: true });
     }
   },
   head: () => ({
