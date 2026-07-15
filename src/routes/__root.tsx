@@ -5,6 +5,7 @@ import {
   createRootRouteWithContext,
   useRouter,
   useRouterState,
+  useNavigate,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -125,10 +126,10 @@ function RootShell({ children }: { children: ReactNode }) {
             __html: `
               try {
                 const stored = localStorage.getItem('theme');
-                if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                  document.documentElement.classList.add('dark');
-                } else {
+                if (stored === 'light') {
                   document.documentElement.classList.remove('dark');
+                } else {
+                  document.documentElement.classList.add('dark');
                 }
               } catch (_) {}
             `,
@@ -146,6 +147,7 @@ function RootShell({ children }: { children: ReactNode }) {
 import { Toaster } from "../components/ui/sonner";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ChatAssistant } from "../components/landing/ChatAssistant";
+import { supabase } from "@/lib/supabase";
 
 function CookieBanner() {
   const [showBanner, setShowBanner] = useState(false);
@@ -204,6 +206,20 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const routerState = useRouterState();
   const pathname = routerState.location.pathname;
+  const navigate = useNavigate();
+
+  // Listen for Supabase PASSWORD_RECOVERY event and redirect to /reset-password
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") {
+        navigate({ to: "/reset-password" });
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
