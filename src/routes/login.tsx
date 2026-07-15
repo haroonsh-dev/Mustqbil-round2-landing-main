@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Layout, Github, Sparkles, Sun, Moon } from "lucide-react";
+import { Layout, Github, Sun, Moon } from "lucide-react";
 import { useState } from "react";
 import { useTheme } from "@/hooks/use-theme";
 import { toast } from "sonner";
@@ -53,12 +53,11 @@ function LoginComponent() {
     }
   };
 
-  const handleOAuthLogin = async (provider: "github" | "okta" = "github") => {
-    setOauthLoading(provider);
+  const handleOAuthLogin = async () => {
+    setOauthLoading("github");
 
-    // Note: Okta requires specific Supabase Enterprise config, using Github as the active default
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: provider === "okta" ? "keycloak" : "github", // Mocking Okta via another provider if needed, or simply pass github
+      provider: "github",
       options: {
         redirectTo: window.location.origin,
       },
@@ -186,32 +185,19 @@ function LoginComponent() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
+          <div>
             <Button
               variant="outline"
               className="w-full h-10 gap-2 cursor-pointer shadow-xs"
               disabled={oauthLoading !== null}
-              onClick={() => handleOAuthLogin("github")}
+              onClick={() => handleOAuthLogin()}
             >
               {oauthLoading === "github" ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <Github className="h-4 w-4" />
               )}
-              GitHub
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full h-10 gap-2 cursor-pointer shadow-xs"
-              disabled={oauthLoading !== null}
-              onClick={() => handleOAuthLogin("okta")}
-            >
-              {oauthLoading === "okta" ? (
-                <Loader2 className="h-4 w-4 text-primary animate-spin" />
-              ) : (
-                <Sparkles className="h-4 w-4 text-primary" />
-              )}
-              Okta SAML
+              Continue with GitHub
             </Button>
           </div>
         </CardContent>
