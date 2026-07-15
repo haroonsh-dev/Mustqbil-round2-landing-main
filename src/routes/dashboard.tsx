@@ -98,14 +98,14 @@ function DashboardComponent() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8 reveal">
+        <div className="flex items-center justify-between mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Your Workspaces</h1>
             <p className="text-muted-foreground mt-1">Select a workspace to view your sprint boards.</p>
           </div>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 reveal">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 animate-in fade-in slide-in-from-bottom-4 duration-700">
           {/* Create New Workspace Card */}
           <Card className="border-dashed border-2 hover:border-primary/50 transition-colors bg-muted/20">
             <CardContent className="pt-6">

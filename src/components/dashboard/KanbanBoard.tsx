@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Check, Plus, Trash2, Loader2, Layout } from "lucide-react";
 import { fetchColumns, createColumn, fetchTasks, createTask, updateTask, deleteTask, Column, Task } from "@/lib/api";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabase";
 
 export function KanbanBoard({ boardId, boardName }: { boardId: string, boardName: string }) {
   const [columns, setColumns] = useState<Column[]>([]);
@@ -33,6 +34,32 @@ export function KanbanBoard({ boardId, boardName }: { boardId: string, boardName
       setIsLoading(false);
     }
   }
+
+  useEffect(() => {
+    // Setup Realtime Sync
+    const channel = supabase.channel(`board-${boardId}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'tasks' }, (payload) => {
+        setTasks((prev) => {
+          // Prevent duplicates if we already optimistically added it
+          if (prev.some(t => t.id === payload.new.id)) return prev;
+          return [...prev, payload.new as Task];
+        });
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'tasks' }, (payload) => {
+        setTasks((prev) => prev.map(t => t.id === payload.new.id ? (payload.new as Task) : t));
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'tasks' }, (payload) => {
+        setTasks((prev) => prev.filter(t => t.id !== payload.old.id));
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'columns', filter: `board_id=eq.${boardId}` }, (payload) => {
+        setColumns((prev) => [...prev, payload.new as Column]);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [boardId]);
 
   async function handleAddColumn(e: React.FormEvent) {
     e.preventDefault();

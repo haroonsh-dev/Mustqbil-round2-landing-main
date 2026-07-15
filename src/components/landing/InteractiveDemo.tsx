@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Check, Plus, Trash2, Edit2 } from "lucide-react";
+import { ArrowRight, Check, Plus, Trash2, Edit2, Focus, Eye } from "lucide-react";
+import { toast } from "sonner";
+import { trackEvent } from "@/lib/analytics";
 
 interface Task {
   id: string;
@@ -22,28 +24,46 @@ interface Particle {
   size: number;
 }
 
-interface ChatMessage {
-  id: string;
-  sender: "user" | "bot";
-  text: string;
-  timestamp: Date;
-}
+const DEFAULT_TASKS: Task[] = [
+  { id: "1", title: "Design login flow", status: "done", priority: "high", assignee: "H" },
+  { id: "2", title: "Setup PostgreSQL", status: "progress", priority: "high", assignee: "H" },
+  { id: "3", title: "Fix mobile nav", status: "todo", priority: "medium", assignee: "H" }
+];
 
 export function InteractiveDemo() {
-  const [tasks, setTasks] = useState<Task[]>([
-    { id: "1", title: "Design login flow", status: "done", priority: "high", assignee: "H" },
-    { id: "2", title: "Setup PostgreSQL", status: "progress", priority: "high", assignee: "H" },
-    { id: "3", title: "Fix mobile nav", status: "todo", priority: "medium", assignee: "H" }
-  ]);
+  const [tasks, setTasks] = useState<Task[]>(DEFAULT_TASKS);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [newTaskPriority, setNewTaskPriority] = useState<"low" | "medium" | "high">("medium");
   const [boardName, setBoardName] = useState("demo");
   const [isEditingName, setIsEditingName] = useState(false);
+  const [focusMode, setFocusMode] = useState(false);
 
   const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
   const [completingTaskId, setCompletingTaskId] = useState<string | null>(null);
   const [transitioningTaskId, setTransitioningTaskId] = useState<string | null>(null);
   const [particles, setParticles] = useState<Particle[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Load from LocalStorage
+  useEffect(() => {
+    setIsMounted(true);
+    try {
+      const storedTasks = localStorage.getItem("demo_board_tasks");
+      const storedName = localStorage.getItem("demo_board_name");
+      if (storedTasks) setTasks(JSON.parse(storedTasks));
+      if (storedName) setBoardName(storedName);
+    } catch (e) {
+      console.error("Failed to load demo board state", e);
+    }
+  }, []);
+
+  // Save to LocalStorage
+  useEffect(() => {
+    if (isMounted) {
+      localStorage.setItem("demo_board_tasks", JSON.stringify(tasks));
+      localStorage.setItem("demo_board_name", boardName);
+    }
+  }, [tasks, boardName, isMounted]);
 
   const triggerConfettiBurst = (x: number, y: number) => {
     const colors = ["#6366F1", "#818CF8", "#10B981", "#F59E0B", "#EF4444"];
@@ -86,7 +106,10 @@ export function InteractiveDemo() {
 
   const handleAddTask = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTaskTitle.trim()) return;
+    if (!newTaskTitle.trim()) {
+      toast.error("Task title cannot be empty.");
+      return;
+    }
     const newTask: Task = {
       id: Math.random().toString(),
       title: newTaskTitle,
@@ -96,6 +119,8 @@ export function InteractiveDemo() {
     };
     setTasks([...tasks, newTask]);
     setNewTaskTitle("");
+    toast.success("Task added to To Do");
+    trackEvent("demo_action", { action: "add_task" });
   };
 
   const moveTask = (id: string, newStatus: Task["status"], e?: React.MouseEvent) => {
@@ -105,6 +130,7 @@ export function InteractiveDemo() {
       setTimeout(() => {
         setTasks(prev => prev.map(t => t.id === id ? { ...t, status: newStatus } : t));
         setCompletingTaskId(null);
+        toast.success("Task marked as Done!");
       }, 300);
     } else {
       setTransitioningTaskId(id);
@@ -120,8 +146,20 @@ export function InteractiveDemo() {
     setTimeout(() => {
       setTasks(prev => prev.filter(t => t.id !== id));
       setDeletingTaskId(null);
+      toast("Task deleted from board");
     }, 300);
   };
+
+  const toggleFocusMode = () => {
+    setFocusMode(!focusMode);
+    toast(focusMode ? "Focus Mode disabled" : "Focus Mode enabled! Distractions muted.");
+    if (!focusMode) {
+      trackEvent("demo_action", { action: "toggle_focus_mode" });
+    }
+  };
+
+  if (!isMounted) return <div className="min-h-[500px]" />; // Prevents hydration mismatch
+
   return (
     <div className="w-full space-y-6">
         {/* Top Toolbar */}
@@ -153,27 +191,41 @@ export function InteractiveDemo() {
               </span>
             )}
           </div>
-          <form onSubmit={handleAddTask} className="flex flex-wrap items-center gap-2">
-            <Input
-              type="text"
-              placeholder="New task title..."
-              className="h-9 w-full sm:w-48 text-sm"
-              value={newTaskTitle}
-              onChange={(e) => setNewTaskTitle(e.target.value)}
-            />
-            <select
-              value={newTaskPriority}
-              onChange={(e) => setNewTaskPriority(e.target.value as "low" | "medium" | "high")}
-              className="h-9 w-full sm:w-auto rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs focus:outline-none focus:ring-1 focus:ring-ring"
+          <div className="flex items-center gap-4">
+            <button
+              onClick={toggleFocusMode}
+              className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-md transition-colors border ${
+                focusMode 
+                  ? "bg-primary text-primary-foreground border-primary" 
+                  : "bg-muted text-muted-foreground border-border hover:bg-muted/80"
+              }`}
+              title="Power Feature: Mutes other columns to keep you focused on In Progress"
             >
-              <option value="low">Low Priority</option>
-              <option value="medium">Medium Priority</option>
-              <option value="high">High Priority</option>
-            </select>
-            <Button type="submit" size="sm" className="h-9 w-full sm:w-auto gap-1 shadow-xs cursor-pointer" disabled={!newTaskTitle.trim()}>
-              <Plus className="h-4 w-4" /> Add Task
-            </Button>
-          </form>
+              {focusMode ? <Eye className="h-3.5 w-3.5" /> : <Focus className="h-3.5 w-3.5" />}
+              {focusMode ? "Exit Focus" : "Focus Mode"}
+            </button>
+            <form onSubmit={handleAddTask} className="flex flex-wrap items-center gap-2">
+              <Input
+                type="text"
+                placeholder="New task title..."
+                className="h-9 w-full sm:w-48 text-sm"
+                value={newTaskTitle}
+                onChange={(e) => setNewTaskTitle(e.target.value)}
+              />
+              <select
+                value={newTaskPriority}
+                onChange={(e) => setNewTaskPriority(e.target.value as "low" | "medium" | "high")}
+                className="h-9 w-full sm:w-auto rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs focus:outline-none focus:ring-1 focus:ring-ring"
+              >
+                <option value="low">Low Priority</option>
+                <option value="medium">Medium Priority</option>
+                <option value="high">High Priority</option>
+              </select>
+              <Button type="submit" size="sm" className="h-9 w-full sm:w-auto gap-1 shadow-xs cursor-pointer" disabled={!newTaskTitle.trim()}>
+                <Plus className="h-4 w-4" /> Add Task
+              </Button>
+            </form>
+          </div>
         </div>
 
         {/* Particle Blast Effect Layer */}
@@ -199,7 +251,7 @@ export function InteractiveDemo() {
         {/* Simplified preview disclaimer banner */}
         <div className="mb-6 rounded-lg bg-primary/5 border border-primary/25 p-3 text-xs text-muted-foreground flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-left">
           <span>
-            💡 <strong>Sandbox Preview:</strong> This interactive board is a simplified preview showing 3 columns and priority levels.
+            💡 <strong>Sandbox Preview:</strong> This is a real board! Your changes are saved locally. Try enabling Focus Mode!
           </span>
           <Link to="/signup" className="font-semibold text-primary hover:underline shrink-0">
             Create full workspace (custom workflows, tags, unlimited columns) →
@@ -209,7 +261,7 @@ export function InteractiveDemo() {
         {/* Board Columns Grid */}
         <div className="grid gap-6 md:grid-cols-3">
           {/* To Do Column */}
-          <div className="rounded-lg bg-muted/40 p-4 border border-border/50">
+          <div className={`rounded-lg bg-muted/40 p-4 border border-border/50 transition-all duration-500 ${focusMode ? 'opacity-30 grayscale hover:opacity-100 hover:grayscale-0' : ''}`}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">
                 To Do
@@ -278,10 +330,11 @@ export function InteractiveDemo() {
           </div>
 
           {/* In Progress Column */}
-          <div className="rounded-lg bg-muted/40 p-4 border border-border/50">
+          <div className={`rounded-lg bg-muted/40 p-4 border transition-all duration-500 ${focusMode ? 'border-primary shadow-[0_0_15px_rgba(var(--primary),0.1)] ring-1 ring-primary' : 'border-border/50'}`}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">
+              <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                 In Progress
+                {focusMode && <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />}
               </h3>
               <span className="rounded-full bg-muted border border-border/80 px-2 py-0.5 text-xs font-medium">
                 {tasks.filter((t) => t.status === "progress").length}
@@ -357,7 +410,7 @@ export function InteractiveDemo() {
           </div>
 
           {/* Done Column */}
-          <div className="rounded-lg bg-muted/40 p-4 border border-border/50">
+          <div className={`rounded-lg bg-muted/40 p-4 border border-border/50 transition-all duration-500 ${focusMode ? 'opacity-30 grayscale hover:opacity-100 hover:grayscale-0' : ''}`}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">
                 Done

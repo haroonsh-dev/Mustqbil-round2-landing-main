@@ -1,108 +1,17 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Link } from "@tanstack/react-router";
-import { Check, ChevronDown, ChevronUp } from "lucide-react";
-import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-
-function PricingCard({
-  tier,
-  price,
-  features,
-  recommended = false,
-  billingCycle,
-  description,
-  cta,
-  variant,
-  href,
-  period,
-  subtext,
-  onClick,
-}: {
-  tier: string;
-  price: number | string;
-  features: string[];
-  recommended?: boolean;
-  billingCycle?: "monthly" | "annually";
-  description?: string;
-  cta?: string;
-  variant?: string;
-  href?: string;
-  period?: string;
-  subtext?: string;
-  onClick?: () => void;
-}) {
-  return (
-    <div className="pricing-glow-card rounded-xl border-2 border-primary bg-background flex flex-col relative z-10 p-6">
-      {recommended && (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
-          Most Popular
-        </span>
-      )}
-      <div className="mb-4">
-        <h3 className="text-xl font-bold">{tier}</h3>
-        <div className="mt-2 flex flex-col items-start text-left">
-          <div className="flex items-baseline gap-1">
-            <span className="text-4xl font-extrabold text-foreground">
-              {typeof price === "number" ? `$${price}` : price}
-            </span>
-            <span className="text-sm text-muted-foreground">
-              {period || (typeof price === "number" ? "/ user / mo" : "")}
-            </span>
-          </div>
-          {subtext && (
-            <span className="text-[10px] font-semibold text-muted-foreground mt-1 block">
-              {subtext}
-            </span>
-          )}
-        </div>
-      </div>
-      <ul className="mb-6 flex-1 space-y-3">
-        {features.map((f, i) => (
-          <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-            <Check className="h-4 w-4 shrink-0 text-primary" />
-            <span>{f}</span>
-          </li>
-        ))}
-      </ul>
-      {onClick ? (
-        <Button
-          variant={recommended ? "default" : "outline"}
-          className="w-full cursor-pointer whitespace-nowrap"
-          onClick={onClick}
-        >
-          {cta || "Contact sales"}
-        </Button>
-      ) : (
-        <Button
-          variant={recommended ? "default" : "outline"}
-          className="w-full cursor-pointer whitespace-nowrap"
-          asChild
-        >
-          <Link to={(href || "/signup") as any}>
-            {cta || "Start 14-day trial"}
-          </Link>
-        </Button>
-      )}
-    </div>
-  );
-}
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Check } from "lucide-react";
+import { PricingCard } from "@/components/pricing/PricingCard";
+import { BusinessInquiryModal } from "@/components/pricing/BusinessInquiryModal";
 
 export function Pricing({ isSubpage = false }: { isSubpage?: boolean }) {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annually">("annually");
-  const [teamCheckoutOpen, setTeamCheckoutOpen] = useState(false);
   const [businessContactOpen, setBusinessContactOpen] = useState(false);
+  const navigate = useNavigate();
+  
   return (
-    <section id="pricing" className={`mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 ${isSubpage ? "pt-28 pb-20 animate-fade-in" : "py-20"}`}>
+    <section id="pricing" className={`mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 ${isSubpage ? "pt-28 pb-20 animate-in fade-in duration-700" : "py-20"}`}>
       <div className="mb-12 text-center">
         <span className="text-sm font-semibold uppercase tracking-wider text-primary">
           Pricing
@@ -155,6 +64,33 @@ export function Pricing({ isSubpage = false }: { isSubpage?: boolean }) {
         </div>
       </div>
 
+      {/* Who uses Clarity segment */}
+      <div className="mb-12 border-y border-border/50 bg-muted/20 py-8 px-6 rounded-xl">
+        <h3 className="text-center text-sm font-bold uppercase tracking-wider text-muted-foreground mb-6">
+          Who uses Clarity?
+        </h3>
+        <div className="grid gap-6 md:grid-cols-3 max-w-4xl mx-auto text-left">
+          <div className="space-y-2">
+            <h4 className="font-semibold text-foreground">1. The Solo Founder</h4>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Uses the <strong className="text-foreground">Starter</strong> plan to map out an MVP backlog and keep their personal side-projects organized without paying a dime.
+            </p>
+          </div>
+          <div className="space-y-2">
+            <h4 className="font-semibold text-foreground">2. The 10-Person Dev Shop</h4>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Uses the <strong className="text-foreground">Team</strong> plan to coordinate fast-paced client sprints, integrating directly with GitHub to automate issue tracking.
+            </p>
+          </div>
+          <div className="space-y-2">
+            <h4 className="font-semibold text-foreground">3. The Scaling Startup PM</h4>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Uses the <strong className="text-foreground">Business</strong> plan to enforce SOC 2 compliance via SSO while keeping their cross-functional squads perfectly aligned.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Pricing cards showing monthly vs annual pricing comparison (PM Improvement #10) */}
       <div className="grid gap-6 md:grid-cols-3 items-stretch mb-12">
         <PricingCard
@@ -162,13 +98,13 @@ export function Pricing({ isSubpage = false }: { isSubpage?: boolean }) {
           price="$0"
           period=" / forever free"
           subtext="No credit card required"
-          description="For developers working on personal or hobby projects."
+          description="For individuals exploring Clarity with strict limits."
           features={[
-            "Up to 3 active projects",
-            "2 team members",
-            "Basic task boards",
+            "Maximum 3 active projects",
+            "Up to 2 team members max",
+            "Standard task boards only",
             "100MB storage limit",
-            "Slack status notifications",
+            "No third-party integrations",
           ]}
           cta="Get started free"
           variant="outline"
@@ -210,11 +146,11 @@ export function Pricing({ isSubpage = false }: { isSubpage?: boolean }) {
               </li>
               <li className="flex items-start gap-2.5 text-xs text-foreground">
                 <Check className="h-4 w-4 text-primary shrink-0" />{" "}
-                <span>GitHub repository workflow automation</span>
+                <span>Basic GitHub issue integration</span>
               </li>
               <li className="flex items-start gap-2.5 text-xs text-foreground">
                 <Check className="h-4 w-4 text-primary shrink-0" />{" "}
-                <span>Real-time sprint progress charts</span>
+                <span>Sprint velocity reporting</span>
               </li>
               <li className="flex items-start gap-2.5 text-xs text-foreground">
                 <Check className="h-4 w-4 text-primary shrink-0" />{" "}
@@ -222,12 +158,17 @@ export function Pricing({ isSubpage = false }: { isSubpage?: boolean }) {
               </li>
               <li className="flex items-start gap-2.5 text-xs text-foreground">
                 <Check className="h-4 w-4 text-primary shrink-0" />{" "}
-                <span>Priority email support responses</span>
+                <span>Priority email support</span>
               </li>
             </ul>
 
             <Button
-              onClick={() => setTeamCheckoutOpen(true)}
+              onClick={() => {
+                import("@/lib/analytics").then(({ trackEvent }) => {
+                  trackEvent("cta_click", { button_name: "pricing_cta_team", cycle: billingCycle });
+                });
+                navigate({ to: `/checkout`, search: { plan: "team", cycle: billingCycle } });
+              }}
               className="mt-8 w-full inline-flex h-9 items-center justify-center rounded-md bg-primary text-primary-foreground font-semibold shadow-xs whitespace-nowrap cursor-pointer"
             >
               Start 14-day free trial
@@ -260,93 +201,7 @@ export function Pricing({ isSubpage = false }: { isSubpage?: boolean }) {
         />
       </div>
       
-      {/* Team Plan Checkout Dialog (Mock) */}
-      <Dialog open={teamCheckoutOpen} onOpenChange={setTeamCheckoutOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Complete your subscription</DialogTitle>
-            <DialogDescription>
-              You are subscribing to the <strong>Team Plan</strong> ({billingCycle === "annually" ? "$120/user/year" : "$12/user/month"}). First 14 days are free.
-            </DialogDescription>
-          </DialogHeader>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              toast.success("Subscription successful! Welcome to the Team Plan.");
-              setTeamCheckoutOpen(false);
-            }}
-            className="space-y-4 py-4"
-          >
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Cardholder Name</label>
-              <Input placeholder="Jane Doe" required />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Card Number</label>
-              <Input placeholder="0000 0000 0000 0000" maxLength={19} required />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Expiry</label>
-                <Input placeholder="MM/YY" maxLength={5} required />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">CVC</label>
-                <Input type="password" placeholder="123" maxLength={4} required />
-              </div>
-            </div>
-            <DialogFooter className="mt-4">
-              <Button type="submit" className="w-full cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90">
-                Start Trial
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Business Plan Contact Dialog */}
-      <Dialog open={businessContactOpen} onOpenChange={setBusinessContactOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Contact Enterprise Sales</DialogTitle>
-            <DialogDescription>
-              Let us know how we can tailor Clarity for your organization.
-            </DialogDescription>
-          </DialogHeader>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              toast.success("Message sent! Our enterprise team will get back to you shortly.");
-              setBusinessContactOpen(false);
-            }}
-            className="space-y-4 py-4"
-          >
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Full Name</label>
-              <Input placeholder="Jane Doe" required />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Work Email</label>
-              <Input type="email" placeholder="jane@company.com" required />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Company Size</label>
-              <select className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring">
-                <option value="50-200">50 - 200 employees</option>
-                <option value="201-500">201 - 500 employees</option>
-                <option value="500+">500+ employees</option>
-              </select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Specific Requirements (e.g. Okta SSO, On-Prem)</label>
-              <Textarea placeholder="Tell us about your team's compliance or feature needs..." required />
-            </div>
-            <DialogFooter>
-              <Button type="submit" className="w-full cursor-pointer">Submit Inquiry</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <BusinessInquiryModal isOpen={businessContactOpen} setIsOpen={setBusinessContactOpen} />
     </section>
   );
 }

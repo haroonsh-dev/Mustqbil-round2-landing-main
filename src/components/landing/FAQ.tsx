@@ -36,6 +36,12 @@ export function FAQ() {
       answer:
         "Not currently. Clarity is cloud-hosted with 99.99% uptime SLA on the Business plan. Enterprise on-premise is on our roadmap.",
     },
+    {
+      id: "faq-5",
+      question: "How secure is our proprietary data?",
+      answer:
+        "Extremely secure. We use enterprise-grade AES-256 encryption at rest and in transit. Clarity is SOC 2 Type II certified and GDPR compliant.",
+    },
   ];
 
   const filteredFaqs = faqs.filter(

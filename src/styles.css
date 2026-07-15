@@ -137,6 +137,17 @@
     border-color: var(--color-border);
   }
 
+  /* Global Accessibility Focus States */
+  *:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    border-radius: inherit;
+  }
+
   html, :root {
     scroll-behavior: smooth !important;
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -295,33 +306,7 @@
   box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5), 0 0 35px rgba(99, 102, 241, 0.35) !important;
 }
 
-.reveal {
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-              transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  will-change: transform, opacity;
-}
-.reveal-active {
-  opacity: 1 !important;
-  transform: translateY(0) !important;
-}
-.reveal-stagger > * {
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
-              transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.reveal-active.reveal-stagger > * {
-  opacity: 1 !important;
-  transform: translateY(0) !important;
-}
-.reveal-active.reveal-stagger > *:nth-child(1) { transition-delay: 100ms; }
-.reveal-active.reveal-stagger > *:nth-child(2) { transition-delay: 200ms; }
-.reveal-active.reveal-stagger > *:nth-child(3) { transition-delay: 300ms; }
-.reveal-active.reveal-stagger > *:nth-child(4) { transition-delay: 400ms; }
-.reveal-active.reveal-stagger > *:nth-child(5) { transition-delay: 500ms; }
-.reveal-active.reveal-stagger > *:nth-child(6) { transition-delay: 600ms; }
+
 
 .scrolled {
   background-color: oklch(from var(--background) l c h / 80%) !important;

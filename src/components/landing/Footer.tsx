@@ -34,6 +34,11 @@ export function Footer() {
       return;
     }
     setIsSubmitting(true);
+    
+    import("@/lib/analytics").then(({ trackEvent }) => {
+      trackEvent("form_submit", { form_name: "newsletter_signup" });
+    });
+
     setTimeout(() => {
       setIsSubmitting(false);
       setFooterEmailSuccess(true);
@@ -158,6 +163,9 @@ export function Footer() {
             <Link to="/terms" className="hover:text-foreground cursor-pointer">
               Terms of Service
             </Link>
+            <Link to="/terms" className="hover:text-foreground cursor-pointer">
+              Cookie Policy
+            </Link>
             <Link to="/security" className="hover:text-foreground cursor-pointer">
               Security Disclosure
             </Link>
@@ -189,6 +197,9 @@ export function Footer() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
+              import("@/lib/analytics").then(({ trackEvent }) => {
+                trackEvent("form_submit", { form_name: "careers_application" });
+              });
               toast.success("Application submitted successfully! We'll review your details.");
               setContactOpen(false);
             }}

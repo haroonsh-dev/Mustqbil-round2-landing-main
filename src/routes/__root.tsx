@@ -151,6 +151,11 @@ import { supabase } from "@/lib/supabase";
 
 function CookieBanner() {
   const [showBanner, setShowBanner] = useState(false);
+  const [showPreferences, setShowPreferences] = useState(false);
+  const [preferences, setPreferences] = useState({
+    analytics: true,
+    marketing: false,
+  });
 
   useEffect(() => {
     const consent = localStorage.getItem("cookie-consent");
@@ -159,43 +164,81 @@ function CookieBanner() {
     }
   }, []);
 
-  const acceptCookies = () => {
-    localStorage.setItem("cookie-consent", "accepted");
+  const acceptAllCookies = () => {
+    localStorage.setItem("cookie-consent", JSON.stringify({ analytics: true, marketing: true, preferences: true }));
     setShowBanner(false);
   };
 
-  const declineCookies = () => {
-    localStorage.setItem("cookie-consent", "declined");
+  const savePreferences = () => {
+    localStorage.setItem("cookie-consent", JSON.stringify(preferences));
     setShowBanner(false);
   };
 
   if (!showBanner) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-md bg-card border border-border rounded-xl shadow-2xl p-4 z-50 animate-in slide-in-from-bottom-5 duration-300">
-      <div className="flex gap-3">
+    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm bg-card border border-border rounded-xl shadow-2xl p-5 z-[100] animate-in slide-in-from-bottom-5 duration-300">
+      <div className="flex gap-3 mb-4">
         <div className="h-9 w-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
           <Shield className="h-5 w-5" />
         </div>
         <div className="space-y-1 flex-1">
-          <h4 className="text-sm font-semibold text-foreground text-left">Cookie Preference</h4>
+          <h4 className="text-sm font-semibold text-foreground text-left">We value your privacy</h4>
           <p className="text-xs text-muted-foreground leading-relaxed text-left">
-            We use cookies to analyze site traffic, personalize content, and enhance your sprint board performance.
+            We use cookies to analyze site traffic, remember your settings, and deliver targeted marketing. 
+            See our <Link to="/privacy" className="underline hover:text-primary">Privacy Policy</Link> and <Link to="/terms" className="underline hover:text-primary">Cookie Policy</Link>.
           </p>
         </div>
       </div>
-      <div className="flex justify-end gap-2 mt-4 pt-2 border-t border-border/60">
+      
+      {showPreferences && (
+        <div className="mb-4 space-y-3 bg-muted/30 p-3 rounded-lg border border-border/50 text-xs text-left">
+          <div className="flex items-center justify-between">
+            <label className="font-semibold text-foreground">Strictly Necessary</label>
+            <input type="checkbox" checked disabled className="accent-primary opacity-50 cursor-not-allowed" />
+          </div>
+          <div className="flex items-center justify-between">
+            <label className="font-semibold text-foreground">Analytics</label>
+            <input 
+              type="checkbox" 
+              checked={preferences.analytics} 
+              onChange={(e) => setPreferences(prev => ({ ...prev, analytics: e.target.checked }))}
+              className="accent-primary cursor-pointer h-3 w-3" 
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <label className="font-semibold text-foreground">Marketing</label>
+            <input 
+              type="checkbox" 
+              checked={preferences.marketing} 
+              onChange={(e) => setPreferences(prev => ({ ...prev, marketing: e.target.checked }))}
+              className="accent-primary cursor-pointer h-3 w-3" 
+            />
+          </div>
+        </div>
+      )}
+
+      <div className="flex flex-col sm:flex-row justify-end gap-2 pt-2 border-t border-border/60">
+        {!showPreferences ? (
+          <button
+            onClick={() => setShowPreferences(true)}
+            className="px-3 py-2 text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
+          >
+            Manage preferences
+          </button>
+        ) : (
+          <button
+            onClick={savePreferences}
+            className="px-3 py-2 text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
+          >
+            Save preferences
+          </button>
+        )}
         <button
-          onClick={declineCookies}
-          className="px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
+          onClick={acceptAllCookies}
+          className="rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/90 cursor-pointer shadow-xs transition-colors"
         >
-          Decline
-        </button>
-        <button
-          onClick={acceptCookies}
-          className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 cursor-pointer shadow-xs transition-colors"
-        >
-          Accept All
+          Accept all
         </button>
       </div>
     </div>
@@ -220,35 +263,6 @@ function RootComponent() {
 
     return () => subscription.unsubscribe();
   }, [navigate]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const observerOptions = {
-      root: null,
-      rootMargin: "0px",
-      threshold: 0.05,
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("reveal-active");
-          observer.unobserve(entry.target);
-        }
-      });
-    }, observerOptions);
-
-    const timeoutId = setTimeout(() => {
-      const elements = document.querySelectorAll(".reveal");
-      elements.forEach((el) => observer.observe(el));
-    }, 50);
-
-    return () => {
-      clearTimeout(timeoutId);
-      observer.disconnect();
-    };
-  }, [pathname]);
 
   return (
     <AuthProvider>

@@ -28,10 +28,10 @@ function Index() {
       <Navbar />
 
       <main id="main-content" className="flex-1 focus:outline-none pt-20">
-        <div className="reveal"><Hero /></div>
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700"><Hero /></div>
         
         {/* Infinite Logo Scroller (Social Proof) */}
-        <div className="reveal border-y border-border bg-[#F4F4F5] dark:bg-muted/5 py-20 overflow-hidden relative w-full logo-ticker-container">
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 border-y border-border bg-[#F4F4F5] dark:bg-muted/5 py-20 overflow-hidden relative w-full logo-ticker-container">
           <div className="logo-ticker-track flex items-center">
             {/* Set 1 */}
             <div className="flex gap-8 md:gap-16 shrink-0 items-center justify-around pr-8 md:pr-16 text-xs md:text-sm font-semibold tracking-wider text-muted-foreground/60 uppercase">
@@ -58,12 +58,12 @@ function Index() {
           </div>
         </div>
 
-        <div className="reveal"><Features /></div>
-        <div className="reveal"><StaticBoardPreview /></div>
-        <div className="reveal"><Pricing /></div>
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150"><Features /></div>
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300"><StaticBoardPreview /></div>
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500"><Pricing /></div>
       </main>
 
-      <div className="reveal"><Footer /></div>
+      <div className="animate-in fade-in slide-in-from-bottom-4 duration-700"><Footer /></div>
 
       {/* Back to Top Button */}
       <button
