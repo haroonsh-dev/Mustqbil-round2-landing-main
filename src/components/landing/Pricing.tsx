@@ -99,8 +99,8 @@ function PricingCard({
 
 export function Pricing({ isSubpage = false }: { isSubpage?: boolean }) {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annually">("annually");
-  const [pricingCompareOpen, setPricingCompareOpen] = useState(false);
-  const [contactOpen, setContactOpen] = useState(false);
+  const [teamCheckoutOpen, setTeamCheckoutOpen] = useState(false);
+  const [businessContactOpen, setBusinessContactOpen] = useState(false);
   return (
     <section id="pricing" className={`mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 ${isSubpage ? "pt-28 pb-20 animate-fade-in" : "py-20"}`}>
       <div className="mb-12 text-center">
@@ -226,12 +226,12 @@ export function Pricing({ isSubpage = false }: { isSubpage?: boolean }) {
               </li>
             </ul>
 
-            <Link
-              to="/signup"
-              className="mt-8 w-full inline-flex h-9 items-center justify-center rounded-md bg-primary text-primary-foreground font-semibold shadow-xs whitespace-nowrap"
+            <Button
+              onClick={() => setTeamCheckoutOpen(true)}
+              className="mt-8 w-full inline-flex h-9 items-center justify-center rounded-md bg-primary text-primary-foreground font-semibold shadow-xs whitespace-nowrap cursor-pointer"
             >
               Start 14-day free trial
-            </Link>
+            </Button>
           </div>
         </div>
 
@@ -256,24 +256,68 @@ export function Pricing({ isSubpage = false }: { isSubpage?: boolean }) {
           ]}
           cta="Contact sales"
           variant="outline"
-          onClick={() => setContactOpen(true)}
+          onClick={() => setBusinessContactOpen(true)}
         />
       </div>
       
-      {/* Contact Sales Dialog */}
-      <Dialog open={contactOpen} onOpenChange={setContactOpen}>
+      {/* Team Plan Checkout Dialog (Mock) */}
+      <Dialog open={teamCheckoutOpen} onOpenChange={setTeamCheckoutOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Contact Sales</DialogTitle>
+            <DialogTitle>Complete your subscription</DialogTitle>
             <DialogDescription>
-              Let us know how we can help your team get started with Clarity.
+              You are subscribing to the <strong>Team Plan</strong> ({billingCycle === "annually" ? "$120/user/year" : "$12/user/month"}). First 14 days are free.
             </DialogDescription>
           </DialogHeader>
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              toast.success("Message sent! Our sales team will get back to you shortly.");
-              setContactOpen(false);
+              toast.success("Subscription successful! Welcome to the Team Plan.");
+              setTeamCheckoutOpen(false);
+            }}
+            className="space-y-4 py-4"
+          >
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Cardholder Name</label>
+              <Input placeholder="Jane Doe" required />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Card Number</label>
+              <Input placeholder="0000 0000 0000 0000" maxLength={19} required />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Expiry</label>
+                <Input placeholder="MM/YY" maxLength={5} required />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">CVC</label>
+                <Input type="password" placeholder="123" maxLength={4} required />
+              </div>
+            </div>
+            <DialogFooter className="mt-4">
+              <Button type="submit" className="w-full cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90">
+                Start Trial
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Business Plan Contact Dialog */}
+      <Dialog open={businessContactOpen} onOpenChange={setBusinessContactOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Contact Enterprise Sales</DialogTitle>
+            <DialogDescription>
+              Let us know how we can tailor Clarity for your organization.
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              toast.success("Message sent! Our enterprise team will get back to you shortly.");
+              setBusinessContactOpen(false);
             }}
             className="space-y-4 py-4"
           >
@@ -288,18 +332,17 @@ export function Pricing({ isSubpage = false }: { isSubpage?: boolean }) {
             <div className="space-y-2">
               <label className="text-sm font-medium">Company Size</label>
               <select className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring">
-                <option value="1-10">1 - 10 employees</option>
-                <option value="11-50">11 - 50 employees</option>
-                <option value="51-200">51 - 200 employees</option>
-                <option value="200+">200+ employees</option>
+                <option value="50-200">50 - 200 employees</option>
+                <option value="201-500">201 - 500 employees</option>
+                <option value="500+">500+ employees</option>
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">How can we help?</label>
-              <Textarea placeholder="Tell us about your team's needs..." required />
+              <label className="text-sm font-medium">Specific Requirements (e.g. Okta SSO, On-Prem)</label>
+              <Textarea placeholder="Tell us about your team's compliance or feature needs..." required />
             </div>
             <DialogFooter>
-              <Button type="submit" className="w-full">Send Message</Button>
+              <Button type="submit" className="w-full cursor-pointer">Submit Inquiry</Button>
             </DialogFooter>
           </form>
         </DialogContent>
