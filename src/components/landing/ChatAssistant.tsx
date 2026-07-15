@@ -111,7 +111,7 @@ const knowledgeBase: { keywords: string[]; weight: number; response: string }[] 
     keywords: ["import", "jira", "linear", "migrate", "migration", "csv", "json", "export", "transfer", "move data", "switch"],
     weight: 3,
     response:
-      "Yes! You can easily import from other tools:\n\n**From Jira or Linear:**\n1. Go to Settings → Import\n2. Upload a CSV or JSON export\n3. Tasks, statuses, and assignees transfer automatically\n4. Migration typically takes under 2 minutes\n\n**What transfers:**\n• Tasks and descriptions\n• Statuses and columns\n• Assignees\n• Labels and priorities\n• Due dates",
+      "🚧 **Import from Jira & Linear — Coming Soon!**\n\nWe're actively building our data import tool. When it launches, you'll be able to:\n\n• Upload CSV or JSON exports from Jira, Linear, or Trello\n• Auto-map tasks, statuses, assignees, and labels\n• Migrate your entire workspace in under 2 minutes\n\nThis feature is currently in development and will be available in an upcoming release. Stay tuned via /changelog!",
   },
   // === ACCOUNT & AUTH ===
   {
@@ -184,41 +184,41 @@ const knowledgeBase: { keywords: string[]; weight: number; response: string }[] 
     keywords: ["slack", "notification", "notifications", "alert", "alerts"],
     weight: 2,
     response:
-      "Clarity integrates with Slack for real-time notifications:\n\n• Task created, moved, or completed alerts\n• Sprint start/end notifications\n• @mention notifications\n• Daily/weekly summary digests\n\nSetup: Settings → Integrations → Connect Slack\nAvailable on all plans, including the free Starter tier!",
+      "🚧 **Slack Integration — In Development!**\n\nWe're currently building Slack integration. When released, it will include:\n\n• Task created, moved, or completed alerts\n• Sprint start/end notifications\n• @mention notifications in Slack channels\n• Daily/weekly summary digests\n\nThis is one of our top priorities and will be available soon. Check /changelog for updates!",
   },
   {
     keywords: ["integration", "integrations", "connect", "third party", "apps"],
     weight: 2,
     response:
-      "Clarity integrates with your favorite tools:\n\n• **GitHub** — Commit-to-task automation\n• **Slack** — Real-time notifications\n• **Webhooks** — Custom integrations (Business plan)\n• **REST API** — Build your own integrations (Business plan)\n\nMore integrations (GitLab, Bitbucket, Discord) are on our roadmap!",
+      "Here's where our integrations stand:\n\n✅ **GitHub** — Live! Commit-to-task automation works today.\n🚧 **Slack** — In development. Real-time notifications coming soon.\n🚧 **Webhooks** — In development for Business plan.\n🚧 **REST API** — In development for Business plan.\n📋 **Roadmap** — GitLab, Bitbucket, Discord planned.\n\nGitHub integration is fully functional right now! The rest are actively being built.",
   },
   // === STORAGE ===
   {
     keywords: ["storage", "file", "files", "attachment", "attachments", "upload", "space", "gb", "mb"],
     weight: 2,
     response:
-      "Storage varies by plan:\n\n• **Starter** — 100MB\n• **Team** — 10GB\n• **Business** — Unlimited\n\nYou can attach files, images, documents, and screenshots directly to task cards. Supported formats include PDF, PNG, JPG, DOCX, and more.",
+      "🚧 **File Attachments — Coming Soon!**\n\nWe're building file attachment support for task cards. Planned storage limits:\n\n• **Starter** — 100MB\n• **Team** — 10GB\n• **Business** — Unlimited\n\nYou'll be able to attach PDFs, images, documents, and screenshots directly to cards. This feature is currently in development!",
   },
   // === API / WEBHOOKS ===
   {
     keywords: ["api", "webhook", "webhooks", "developer", "developers", "programmatic", "rest api", "endpoint"],
     weight: 2,
     response:
-      "The Business plan includes full API access:\n\n• **REST API** — Create, read, update, delete tasks programmatically\n• **Webhooks** — Get HTTP callbacks when events occur\n• **Rate limits** — Configurable per-API-key limits\n• **Authentication** — API key or OAuth bearer tokens\n\nPerfect for CI/CD integrations, custom dashboards, or automating workflows!",
+      "🚧 **API & Webhooks — In Development!**\n\nWe're building a full developer platform for the Business plan:\n\n• **REST API** — CRUD operations on tasks, boards, and sprints\n• **Webhooks** — HTTP callbacks when events occur\n• **API Keys** — Secure authentication per integration\n• **Rate limiting** — Configurable per-key limits\n\nPerfect for CI/CD, custom dashboards, and automations. Coming in a future release!",
   },
   // === COLLABORATION ===
   {
     keywords: ["collaborate", "collaboration", "real-time", "realtime", "team work", "together", "share"],
     weight: 2,
     response:
-      "Clarity is built for real-time team collaboration:\n\n• **Live board updates** — See changes instantly when teammates move tasks\n• **@mentions** — Tag team members in card comments\n• **Activity feed** — Track who did what and when\n• **Shared views** — Everyone sees the same board state\n• **Role-based access** — Admin, Member, and Guest roles\n\nNo more \"did you update the board?\" messages!",
+      "🚧 **Real-Time Collaboration — Actively Being Improved!**\n\nWe're upgrading collaboration beyond the current demo experience:\n\n• **Live board sync** — See teammate changes in real-time (in progress)\n• **@mentions** — Tag team members in comments (coming soon)\n• **Activity feed** — Full audit trail of who did what (coming soon)\n• **Role-based access** — Admin, Member, Guest roles (coming soon)\n\nThe Kanban board currently works great for individual use. Multi-user real-time sync is our next major milestone!",
   },
   // === MOBILE ===
   {
     keywords: ["mobile", "phone", "ios", "android", "app", "responsive"],
     weight: 2,
     response:
-      "Clarity's web app is fully responsive and works great on mobile browsers!\n\n• Swipe to navigate between columns\n• Tap to open and edit cards\n• Full task management on the go\n\nDedicated iOS and Android apps are on our roadmap. For now, you can add Clarity to your home screen for an app-like experience!",
+      "🚧 **Mobile Experience — Improving!**\n\nClarity's web app works on mobile browsers with basic responsiveness. We're actively improving:\n\n• Better touch interactions for drag-and-drop\n• Optimized mobile board layouts\n• Swipe gestures between columns\n\n📋 **On our roadmap:**\n• Dedicated iOS app\n• Dedicated Android app\n• Push notifications\n\nFor now, you can add Clarity to your home screen for a quick-access experience!",
   },
   // === GREETINGS ===
   {
