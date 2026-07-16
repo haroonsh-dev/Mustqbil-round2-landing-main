@@ -200,124 +200,115 @@ function CheckoutComponent() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
-
-      <main className="flex-1 flex flex-col lg:flex-row w-full pt-16 lg:pt-20">
-        {/* Left Column - Billing & Payment */}
-        <div className="flex-1 flex flex-col items-center justify-start lg:justify-center p-6 md:p-12 lg:p-24 lg:border-r lg:border-border order-2 lg:order-1">
-          <div className="w-full max-w-md animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-2">Secure Checkout</h1>
-            <p className="text-sm md:text-base text-muted-foreground mb-8">Enter your billing details to start your 14-day free trial.</p>
+      <main className="flex-1 w-full bg-muted/20 py-12 md:py-24 px-4 flex justify-center">
+        <div className="w-full max-w-5xl bg-background rounded-3xl shadow-2xl border border-border overflow-hidden flex flex-col lg:flex-row animate-in fade-in slide-in-from-bottom-8 duration-700">
+          
+          {/* Left Column - Billing & Payment */}
+          <div className="flex-1 p-6 md:p-10 lg:p-12 order-2 lg:order-1">
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-2">Checkout</h1>
+            <p className="text-sm text-muted-foreground mb-8">Start your 14-day free trial. No commitments.</p>
 
             <form onSubmit={handleCheckout} className="space-y-6">
-              <div className="space-y-4">
-                <h2 className="text-base md:text-lg font-semibold border-b border-border pb-2">Billing Information</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label htmlFor="name" className="text-xs font-semibold">Full Name</label>
-                    {/* Segment 8: Accessibility & Mobile inputmode/autocomplete */}
-                    <Input id="name" tabIndex={1} autoComplete="name" placeholder="Sarah Chen" value={name} onChange={(e) => setName(e.target.value)} required className="h-11" />
-                  </div>
-                  <div className="space-y-1">
-                    <label htmlFor="company" className="text-xs font-semibold">Company Name</label>
-                    <Input id="company" tabIndex={2} autoComplete="organization" placeholder="Acme Corp" value={company} onChange={(e) => setCompany(e.target.value)} className="h-11" />
-                  </div>
+              {/* Stripe Test Mode Banner for Demo */}
+              <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-4 space-y-3">
+                <div className="flex items-center gap-2 text-sm font-semibold text-blue-800">
+                  <TestTube2 className="h-4 w-4" /> Demo Mode Active
                 </div>
-                <div className="space-y-1">
-                  <label htmlFor="email" className="text-xs font-semibold">Work Email</label>
-                  <Input id="email" tabIndex={3} type="email" autoComplete="email" placeholder="sarah@company.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-11" />
+                <div className="flex gap-2">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => fillTestCard(TEST_CARDS[0])}
+                    className="text-xs h-8 border-blue-200 hover:bg-blue-100 text-blue-700 bg-white"
+                  >
+                    Auto-fill Success Card
+                  </Button>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => fillTestCard(TEST_CARDS[2])}
+                    className="text-xs h-8 border-blue-200 hover:bg-blue-100 text-blue-700 bg-white"
+                  >
+                    Auto-fill Declined Card
+                  </Button>
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <div className="flex items-center justify-between border-b border-border pb-2">
-                  <h2 className="text-base md:text-lg font-semibold">Payment Method</h2>
-                  {/* Segment 7: SSL & Stripe Trust Signals */}
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                    <Lock className="h-3 w-3" /> Secured by Stripe
+              <div className="space-y-4 pt-2">
+                <h2 className="text-base font-semibold">Account Information</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label htmlFor="name" className="text-xs font-semibold text-muted-foreground">Full Name</label>
+                    <Input id="name" tabIndex={1} autoComplete="name" placeholder="Sarah Chen" value={name} onChange={(e) => setName(e.target.value)} required className="h-10 bg-muted/50 focus:bg-background transition-colors" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label htmlFor="company" className="text-xs font-semibold text-muted-foreground">Company Name</label>
+                    <Input id="company" tabIndex={2} autoComplete="organization" placeholder="Acme Corp" value={company} onChange={(e) => setCompany(e.target.value)} className="h-10 bg-muted/50 focus:bg-background transition-colors" />
                   </div>
                 </div>
+                <div className="space-y-1.5">
+                  <label htmlFor="email" className="text-xs font-semibold text-muted-foreground">Work Email</label>
+                  <Input id="email" tabIndex={3} type="email" autoComplete="email" placeholder="sarah@company.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-10 bg-muted/50 focus:bg-background transition-colors" />
+                </div>
+              </div>
 
-                {/* Stripe Test Mode Banner for Demo */}
-                <div className="rounded-lg border border-blue-200 bg-blue-50/50 p-4 space-y-3">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-blue-800">
-                    <TestTube2 className="h-4 w-4" /> Stripe Test Mode
-                  </div>
-                  <p className="text-xs text-blue-600/80">Use these test cards to simulate a successful or failed payment without real money.</p>
-                  <div className="flex gap-2">
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => fillTestCard(TEST_CARDS[0])}
-                      className="text-xs h-7 border-blue-200 hover:bg-blue-100 text-blue-700"
-                    >
-                      Fill Success Card (Visa)
-                    </Button>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => fillTestCard(TEST_CARDS[2])}
-                      className="text-xs h-7 border-blue-200 hover:bg-blue-100 text-blue-700"
-                    >
-                      Fill Declined Card
-                    </Button>
+              <div className="space-y-4 pt-4 border-t border-border">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-base font-semibold">Payment Method</h2>
+                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wider bg-muted/50 px-2 py-1 rounded-md">
+                    <Lock className="h-3 w-3" /> Secured
                   </div>
                 </div>
                 
-                <div className="rounded-xl border border-border bg-card p-4 shadow-xs space-y-4">
-                  <div className="space-y-1 relative">
-                    <label htmlFor="card-number" className="text-xs font-semibold flex justify-between">
-                      Card Number
-                      {cardBrand && <span className="text-primary font-bold">{cardBrand}</span>}
-                    </label>
-                    <div className="relative">
-                      <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input 
-                        id="card-number"
-                        tabIndex={4}
-                        autoComplete="cc-number" 
-                        inputMode="numeric" 
-                        placeholder="0000 0000 0000 0000" 
-                        value={cardNumber} 
-                        onChange={(e) => setCardNumber(formatCardNumber(e.target.value))} 
-                        maxLength={19}
-                        required 
-                        className={`h-11 pl-10 ${cardNumber && !isCardValid ? 'border-destructive focus-visible:ring-destructive' : ''}`}
-                      />
-                    </div>
+                <div className="rounded-xl border border-border shadow-sm overflow-hidden bg-background">
+                  <div className="relative border-b border-border p-3">
+                    <CreditCard className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <input 
+                      id="card-number"
+                      tabIndex={4}
+                      autoComplete="cc-number" 
+                      inputMode="numeric" 
+                      placeholder="Card number" 
+                      value={cardNumber} 
+                      onChange={(e) => setCardNumber(formatCardNumber(e.target.value))} 
+                      maxLength={19}
+                      required 
+                      className="w-full h-8 pl-10 text-sm outline-none bg-transparent placeholder:text-muted-foreground"
+                    />
+                    {cardBrand && <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-primary">{cardBrand}</span>}
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label htmlFor="expiry" className="text-xs font-semibold">Expiry Date</label>
-                      <Input 
+                  <div className="flex bg-muted/10">
+                    <div className="flex-1 p-3 border-r border-border">
+                      <input 
                         id="expiry"
                         tabIndex={5}
                         autoComplete="cc-exp" 
                         inputMode="numeric" 
-                        placeholder="MM/YY" 
+                        placeholder="MM / YY" 
                         value={expiry} 
                         onChange={(e) => setExpiry(formatExpiry(e.target.value))} 
                         maxLength={5}
                         required 
-                        className={`h-11 ${expiry && !isExpiryValid ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                        className="w-full h-8 text-sm outline-none bg-transparent placeholder:text-muted-foreground"
                       />
                     </div>
-                    <div className="space-y-1">
-                      <label htmlFor="cvv" className="text-xs font-semibold">CVV</label>
-                      <Input 
+                    <div className="flex-1 p-3 relative">
+                      <input 
                         id="cvv"
                         tabIndex={6}
                         autoComplete="cc-csc" 
                         inputMode="numeric" 
                         type="password"
-                        placeholder="123" 
+                        placeholder="CVC" 
                         value={cvv} 
                         onChange={(e) => setCvv(e.target.value.replace(/\D/g, ''))} 
                         maxLength={4}
                         required 
-                        className={`h-11 ${cvv && !isCvvValid ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                        className="w-full h-8 text-sm outline-none bg-transparent placeholder:text-muted-foreground"
                       />
+                      <CreditCard className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
                     </div>
                   </div>
                 </div>
@@ -326,78 +317,75 @@ function CheckoutComponent() {
                   type="submit"
                   tabIndex={7}
                   disabled={loading || !isFormValid}
-                  className="w-full h-12 text-sm md:text-base font-semibold shadow-xs bg-primary hover:bg-primary/90 mt-4 cursor-pointer"
+                  className="w-full h-12 text-sm md:text-base font-semibold shadow-md bg-primary hover:bg-primary/90 mt-6 transition-all active:scale-[0.98]"
                 >
-                  {loading ? "Processing..." : `Start 14-Day Free Trial`} <ArrowRight className="ml-2 h-4 w-4" />
+                  {loading ? "Processing Securely..." : `Start Trial & Pay $0.00`}
                 </Button>
-                {/* Segment 7: Inline Refund Policy */}
-                <p className="text-[10px] md:text-xs text-muted-foreground text-center pt-2">
-                  Cancel anytime within the first 30 days for a full refund, no questions asked. No long-term contracts.
+                <p className="text-[11px] text-muted-foreground text-center pt-3 leading-relaxed">
+                  By confirming your subscription, you allow Clarity to charge your card for this payment and future payments in accordance with our terms.
                 </p>
               </div>
             </form>
           </div>
-        </div>
 
-        {/* Right Column - Order Summary */}
-        <div className="w-full lg:w-[480px] bg-muted/30 p-6 md:p-12 lg:p-24 flex flex-col justify-start lg:justify-center border-b lg:border-b-0 lg:border-l border-border order-1 lg:order-2">
-          <div className="w-full max-w-sm mx-auto animate-in fade-in slide-in-from-right-8 duration-700 delay-150">
-            <div className="rounded-2xl border border-border bg-card shadow-xl overflow-hidden">
-              <div className="bg-primary/5 p-6 border-b border-border">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="inline-block px-2 py-1 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider rounded-md">
-                    14-Day Free Trial
-                  </span>
-                  {/* Segment 3: Upsell Toggle */}
+          {/* Right Column - Order Summary */}
+          <div className="w-full lg:w-[420px] bg-muted/40 p-6 md:p-10 lg:p-12 border-t lg:border-t-0 lg:border-l border-border order-1 lg:order-2 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-8">
+                <span className="inline-flex items-center justify-center px-2.5 py-1 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-widest rounded-full">
+                  14-Day Free Trial
+                </span>
+              </div>
+              
+              <div className="mb-8">
+                <h2 className="text-xl md:text-2xl font-bold">{planDetails.name}</h2>
+                <div className="flex items-center gap-2 mt-2">
+                  <p className="text-sm text-muted-foreground">Billed {cycle}</p>
                   {cycle === "monthly" && (
                     <button 
                       onClick={() => setCycle("annually")}
-                      className="text-[10px] font-bold text-green-600 dark:text-green-400 hover:underline cursor-pointer bg-green-500/10 px-2 py-1 rounded"
+                      className="text-[10px] font-bold text-green-600 dark:text-green-400 hover:bg-green-500/10 px-2 py-1 rounded transition-colors"
                     >
-                      Switch to Annual & Save 20%
+                      Save 20% Annually
                     </button>
                   )}
                 </div>
-                <h2 className="text-lg md:text-xl font-bold">{planDetails.name}</h2>
-                <p className="text-xs md:text-sm text-muted-foreground mt-1">Billed {cycle}</p>
               </div>
               
-              <div className="p-6 space-y-4">
+              <div className="space-y-4">
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground">Price per user</span>
+                  <span className="text-muted-foreground font-medium">Price per user</span>
                   <span className="font-semibold">${pricePerUser}.00</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground">First 14 Days</span>
-                  <span className="font-semibold text-green-600 dark:text-green-400">-$0.00</span>
+                  <span className="text-muted-foreground font-medium">14-Day Trial Discount</span>
+                  <span className="font-semibold text-green-600 dark:text-green-400">-${pricePerUser}.00</span>
                 </div>
                 <div className="flex justify-between items-center text-sm border-b border-border pb-4">
-                  <span className="text-muted-foreground">Taxes</span>
-                  <span className="font-semibold">Calculated at next step</span>
+                  <span className="text-muted-foreground font-medium">Taxes</span>
+                  <span className="font-semibold text-muted-foreground">Calculated later</span>
                 </div>
                 
                 <div className="flex justify-between items-end pt-2">
-                  <div>
-                    <span className="block text-sm text-muted-foreground font-medium">Total due today</span>
-                  </div>
-                  <span className="text-2xl md:text-3xl font-extrabold tracking-tight">${totalDue}.00</span>
+                  <span className="text-base text-foreground font-semibold">Total due today</span>
+                  <span className="text-3xl font-extrabold tracking-tight">${totalDue}.00</span>
                 </div>
               </div>
             </div>
 
-            <div className="mt-8 space-y-4">
+            <div className="mt-12 space-y-5 border-t border-border/50 pt-8">
               <div className="flex items-start gap-3">
-                <ShieldCheck className="h-5 w-5 text-green-600 dark:text-green-400 shrink-0" />
+                <ShieldCheck className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-semibold text-foreground">Money-Back Guarantee</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Cancel anytime within the first 30 days for a full refund, no questions asked.</p>
+                  <p className="text-sm font-semibold">30-Day Money-Back Guarantee</p>
+                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">Not satisfied? Contact us within 30 days for a full, unquestioned refund.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="h-5 w-5 text-primary shrink-0" />
+                <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-semibold text-foreground">Cancel Anytime</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">No long term contracts. You're in complete control of your subscription.</p>
+                  <p className="text-sm font-semibold">Cancel Anytime</p>
+                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">You're in total control. No long-term lock-in or hidden cancellation fees.</p>
                 </div>
               </div>
             </div>
