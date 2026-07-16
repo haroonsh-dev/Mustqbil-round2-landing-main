@@ -126,22 +126,23 @@ function OnboardingComponent() {
         await supabase.from('tasks').insert(tasksToInsert);
       }
 
-      // 6. Invite Team Members
+      // 6. Invite Team Members via Edge Function
       const validEmails = emails.filter(e => e.trim() !== "");
       if (validEmails.length > 0) {
-        const membersToInsert = validEmails.map(email => ({
-          workspace_id: workspace.id,
-          email: email.trim(),
-          role: 'member'
-        }));
-        
-        const { error: inviteError } = await supabase
-          .from('workspace_members')
-          .insert(membersToInsert);
+        try {
+          const { data: inviteData, error: inviteError } = await supabase.functions.invoke('send-invite', {
+            body: { workspace_id: workspace.id, emails: validEmails },
+          });
           
-        if (inviteError) {
-          console.error("Failed to invite some members:", inviteError);
-          toast.warning("Workspace created, but some invites failed to send.");
+          if (inviteError) {
+            console.error("Failed to invite some members:", inviteError);
+            toast.warning("Workspace created, but some invites failed to send.");
+          } else {
+            console.log(`📧 Invited ${inviteData?.invited || 0} team member(s)`);
+          }
+        } catch (inviteErr) {
+          console.error("Edge Function call failed:", inviteErr);
+          toast.warning("Workspace created, but invitations could not be sent right now.");
         }
       }
 

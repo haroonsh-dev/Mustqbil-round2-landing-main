@@ -36,30 +36,59 @@ export function KanbanBoard({ boardId, boardName }: { boardId: string, boardName
   }
 
   useEffect(() => {
-    // Setup Realtime Sync
+    // Setup Realtime Sync — scoped to this board's columns
+    const columnIds = columns.map(c => c.id);
+    
     const channel = supabase.channel(`board-${boardId}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'tasks' }, (payload) => {
+        const newTask = payload.new as Task;
+        // Only add if this task belongs to one of our columns
+        if (!columnIds.includes(newTask.column_id)) return;
         setTasks((prev) => {
-          // Prevent duplicates if we already optimistically added it
-          if (prev.some(t => t.id === payload.new.id)) return prev;
-          return [...prev, payload.new as Task];
+          if (prev.some(t => t.id === newTask.id)) return prev;
+          return [...prev, newTask];
         });
       })
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'tasks' }, (payload) => {
-        setTasks((prev) => prev.map(t => t.id === payload.new.id ? (payload.new as Task) : t));
+        const updated = payload.new as Task;
+        setTasks((prev) => {
+          // If task moved INTO our board, add it
+          if (columnIds.includes(updated.column_id) && !prev.some(t => t.id === updated.id)) {
+            return [...prev, updated];
+          }
+          // If task moved OUT of our board, remove it
+          if (!columnIds.includes(updated.column_id)) {
+            return prev.filter(t => t.id !== updated.id);
+          }
+          // Normal update within our board
+          return prev.map(t => t.id === updated.id ? updated : t);
+        });
       })
       .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'tasks' }, (payload) => {
         setTasks((prev) => prev.filter(t => t.id !== payload.old.id));
       })
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'columns', filter: `board_id=eq.${boardId}` }, (payload) => {
-        setColumns((prev) => [...prev, payload.new as Column]);
+        setColumns((prev) => {
+          if (prev.some(c => c.id === payload.new.id)) return prev;
+          return [...prev, payload.new as Column];
+        });
       })
-      .subscribe();
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'columns', filter: `board_id=eq.${boardId}` }, (payload) => {
+        setColumns((prev) => prev.map(c => c.id === payload.new.id ? (payload.new as Column) : c));
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'columns', filter: `board_id=eq.${boardId}` }, (payload) => {
+        setColumns((prev) => prev.filter(c => c.id !== payload.old.id));
+      })
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log(`🔴 Realtime connected for board ${boardId}`);
+        }
+      });
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [boardId]);
+  }, [boardId, columns.length]);
 
   async function handleAddColumn(e: React.FormEvent) {
     e.preventDefault();
