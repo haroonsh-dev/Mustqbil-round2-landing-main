@@ -3,11 +3,12 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CreditCard, Smartphone, Wallet, CheckCircle2, Lock, ShieldCheck, ArrowRight, RefreshCcw } from "lucide-react";
+import { CreditCard, Smartphone, Wallet, CheckCircle2, Lock, ShieldCheck, ArrowRight, RefreshCcw, TestTube2 } from "lucide-react";
 import { toast } from "sonner";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/checkout")({
   beforeLoad: ({ search }) => {
@@ -33,6 +34,13 @@ const PRICING_CONFIG = {
   business: { name: "Business Plan", monthly: 29, annually: 24 }
 };
 
+// Stripe test cards for demo
+const TEST_CARDS = [
+  { brand: "Visa", number: "4242 4242 4242 4242", expiry: "12/30", cvv: "123" },
+  { brand: "Mastercard", number: "5555 5555 5555 4444", expiry: "12/30", cvv: "123" },
+  { brand: "Declined", number: "4000 0000 0000 0002", expiry: "12/30", cvv: "123" },
+];
+
 function CheckoutComponent() {
   const navigate = useNavigate();
   const search = useSearch({ from: "/checkout" }) as { plan: string; cycle: string };
@@ -50,6 +58,7 @@ function CheckoutComponent() {
   const [cvv, setCvv] = useState("");
   
   const [loading, setLoading] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   // Segment 5: Auth and Session State Gating & Pre-fill
   useEffect(() => {
@@ -85,6 +94,14 @@ function CheckoutComponent() {
   };
   const cardBrand = getCardBrand(rawCard);
 
+  // Auto-fill a test card
+  const fillTestCard = (card: typeof TEST_CARDS[0]) => {
+    setCardNumber(card.number);
+    setExpiry(card.expiry);
+    setCvv(card.cvv);
+    toast.info(`Test card filled: ${card.brand}`);
+  };
+
   const formatCardNumber = (val: string) => {
     const v = val.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
     const matches = v.match(/\d{4,16}/g);
@@ -114,12 +131,66 @@ function CheckoutComponent() {
     
     setLoading(true);
     
-    // Segment 6: Post-Purchase Flow (Simulating Stripe success)
-    setTimeout(() => {
+    // Simulate Stripe processing delay
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Simulate declined card
+    if (rawCard === "4000000000000002") {
       setLoading(false);
-      toast.success("Payment successful! Receipt and plan details sent to " + email);
+      toast.error("Card declined. Please try a different card. (This is a Stripe test declined card)");
+      return;
+    }
+
+    // Store the subscription in Supabase
+    try {
+      if (user) {
+        // First, check if user has a workspace (to link subscription)
+        const { data: workspaces } = await supabase
+          .from('workspaces')
+          .select('id')
+          .limit(1);
+        
+        const workspaceId = workspaces?.[0]?.id;
+        
+        // Generate mock Stripe IDs
+        const mockStripeCustomerId = `cus_demo_${Date.now()}`;
+        const mockStripeSubId = `sub_demo_${Date.now()}`;
+        
+        if (workspaceId) {
+          // Upsert subscription record
+          await supabase.from('subscriptions').upsert({
+            workspace_id: workspaceId,
+            stripe_customer_id: mockStripeCustomerId,
+            stripe_subscription_id: mockStripeSubId,
+            plan_id: search.plan,
+            status: 'trialing',
+            current_period_end: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 days from now
+          }, { onConflict: 'workspace_id' });
+        }
+        
+        console.log('📦 [DEMO] Subscription stored in Supabase:', {
+          plan: search.plan,
+          cycle,
+          stripe_customer_id: mockStripeCustomerId,
+          stripe_subscription_id: mockStripeSubId,
+          status: 'trialing',
+          card_last4: rawCard.slice(-4),
+          card_brand: cardBrand,
+        });
+      }
+    } catch (err) {
+      console.error('Failed to store subscription:', err);
+      // Don't block the flow — subscription storage is best-effort in demo mode
+    }
+
+    setLoading(false);
+    setPaymentSuccess(true);
+    toast.success("Payment successful! Receipt and plan details sent to " + email);
+    
+    // Redirect after showing success briefly
+    setTimeout(() => {
       navigate({ to: "/onboarding", search: { email, name } });
-    }, 2000);
+    }, 1500);
   };
 
   if (authLoading || !user) {
@@ -163,6 +234,34 @@ function CheckoutComponent() {
                   {/* Segment 7: SSL & Stripe Trust Signals */}
                   <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                     <Lock className="h-3 w-3" /> Secured by Stripe
+                  </div>
+                </div>
+
+                {/* Stripe Test Mode Banner for Demo */}
+                <div className="rounded-lg border border-blue-200 bg-blue-50/50 p-4 space-y-3">
+                  <div className="flex items-center gap-2 text-sm font-semibold text-blue-800">
+                    <TestTube2 className="h-4 w-4" /> Stripe Test Mode
+                  </div>
+                  <p className="text-xs text-blue-600/80">Use these test cards to simulate a successful or failed payment without real money.</p>
+                  <div className="flex gap-2">
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => fillTestCard(TEST_CARDS[0])}
+                      className="text-xs h-7 border-blue-200 hover:bg-blue-100 text-blue-700"
+                    >
+                      Fill Success Card (Visa)
+                    </Button>
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => fillTestCard(TEST_CARDS[2])}
+                      className="text-xs h-7 border-blue-200 hover:bg-blue-100 text-blue-700"
+                    >
+                      Fill Declined Card
+                    </Button>
                   </div>
                 </div>
                 
