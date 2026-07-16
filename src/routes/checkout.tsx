@@ -200,11 +200,11 @@ function CheckoutComponent() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
-      <main className="flex-1 w-full bg-muted/20 py-12 md:py-24 px-4 flex justify-center">
-        <div className="w-full max-w-5xl bg-background rounded-3xl shadow-2xl border border-border overflow-hidden flex flex-col lg:flex-row animate-in fade-in slide-in-from-bottom-8 duration-700">
+      <main className="flex-1 w-full bg-muted/20 py-8 md:py-16 px-4 flex justify-center items-start lg:items-center">
+        <div className="w-full max-w-4xl bg-background rounded-2xl shadow-2xl border border-border overflow-hidden flex flex-col lg:flex-row animate-in fade-in slide-in-from-bottom-8 duration-700">
           
           {/* Left Column - Billing & Payment */}
-          <div className="flex-1 p-6 md:p-10 lg:p-12 order-2 lg:order-1">
+          <div className="flex-1 p-6 lg:p-10 order-2 lg:order-1">
             <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-2">Checkout</h1>
             <p className="text-sm text-muted-foreground mb-8">Start your 14-day free trial. No commitments.</p>
 
@@ -329,7 +329,7 @@ function CheckoutComponent() {
           </div>
 
           {/* Right Column - Order Summary */}
-          <div className="w-full lg:w-[420px] bg-muted/40 p-6 md:p-10 lg:p-12 border-t lg:border-t-0 lg:border-l border-border order-1 lg:order-2 flex flex-col justify-between">
+          <div className="w-full lg:w-[380px] bg-muted/40 p-6 lg:p-10 border-t lg:border-t-0 lg:border-l border-border order-1 lg:order-2 flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-8">
                 <span className="inline-flex items-center justify-center px-2.5 py-1 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-widest rounded-full">
