@@ -1,71 +1,74 @@
-# Mustqbil — Landing Page
+# Clarity: Project Management SaaS
 
-A landing page built with [TanStack Start](https://tanstack.com/start) (React 19), Vite, Tailwind CSS v4, and Radix UI.
+Clarity is a modern, full-stack project management MVP designed for focused teams. It features a complete user journey from a high-converting landing page to a fully interactive, multiplayer Kanban board.
 
-## Requirements
+## 🚀 Features
 
-- **Node.js** `>= 20` (LTS recommended). Check your version with `node -v`.
-  Download it from [nodejs.org](https://nodejs.org/).
-- A package manager — **pnpm** (recommended) or **npm** (bundled with Node).
-  Install pnpm once with `npm install -g pnpm`.
+- **End-to-End User Journey:** Landing page, pricing, mock checkout, signup, and onboarding flows.
+- **Multiplayer Kanban Board:** Drag-and-drop tasks across columns with real-time sync across connected clients.
+- **Workspaces & Team Invites:** Create workspaces and invite team members using Supabase Edge Functions.
+- **Enterprise-Grade Security:** Full PostgreSQL Row-Level Security (RLS) ensures users can only access data within their own workspaces.
+- **Modern Checkout UI:** A beautifully designed checkout page simulating Stripe integration with a Developer Demo Mode.
 
-## Get the code
+## 🛠 Tech Stack
 
-Clone with Git:
+- **Frontend Framework:** React 18
+- **Routing & Data Fetching:** [TanStack Router](https://tanstack.com/router) (SSR/Client routing) + React Query
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/) & Radix UI (Shadcn-style components)
+- **Backend & Database:** [Supabase](https://supabase.com/) (PostgreSQL)
+- **Realtime:** Supabase Realtime WebSockets
+- **Serverless:** Supabase Edge Functions (Deno)
 
-```bash
-git clone <repository-url>
-cd Mustqbil-round2-landing
-```
+## 📦 Database Architecture
 
-Or **download** the project as a ZIP from the repository page (the green **Code → Download ZIP** button), then extract it and open the extracted folder.
+The application relies on a robust relational schema:
+- `workspaces` - Core organization unit
+- `workspace_members` - Role-based access control linking users to workspaces
+- `boards` -> `columns` -> `tasks` - The Kanban hierarchy
+- `subscriptions` - Manages SaaS billing state
 
-## Install dependencies
+*Security Note: Circular dependencies in RLS between Workspaces and Members are resolved using Postgres `SECURITY DEFINER` functions.*
 
-Using pnpm (recommended):
+## 💻 Running Locally
 
-```bash
-pnpm install
-```
+### Prerequisites
+- Node.js (v18+)
+- npm or pnpm
+- Supabase CLI (for local development or edge function deployment)
 
-Using npm:
-
+### 1. Install Dependencies
 ```bash
 npm install
 ```
 
-## Run in development
+### 2. Environment Variables
+Create a `.env` file in the root directory and add your Supabase project keys:
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-Starts the Vite dev server with hot reload.
-
+### 3. Database Setup
+Run the complete schema migration in your Supabase SQL Editor:
 ```bash
-pnpm dev
-# or
+# Copy and execute the contents of:
+supabase/migrations/00000000_complete_schema.sql
+```
+
+### 4. Start the Development Server
+```bash
 npm run dev
 ```
+The app will be available at `http://localhost:8080`.
 
-Then open the URL printed in the terminal (usually http://localhost:3000).
-
-## Build for production
-
+## 🧠 Edge Functions
+If you wish to test the backend webhook and email simulation:
 ```bash
-pnpm build
-# or
-npm run build
+supabase login
+supabase link --project-ref your_project_ref
+supabase functions deploy send-invite
+supabase functions deploy stripe-webhook
 ```
 
-## Preview the production build
-
-```bash
-pnpm preview
-# or
-npm run preview
-```
-
-## Other scripts
-
-| Script           | Description                      |
-| ---------------- | -------------------------------- |
-| `pnpm lint`      | Run ESLint across the project    |
-| `pnpm format`    | Format files with Prettier       |
-| `pnpm build:dev` | Build using the development mode |
+---
+*Built with modern AI-First development workflows.*
