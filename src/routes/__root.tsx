@@ -257,7 +257,9 @@ function RootComponent() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") {
-        navigate({ to: "/reset-password" });
+        if (!window.location.pathname.includes('/reset-password')) {
+          navigate({ to: "/reset-password" });
+        }
       }
     });
 

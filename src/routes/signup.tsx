@@ -58,6 +58,9 @@ function SignupComponent() {
 
     if (error) {
       toast.error(error.message);
+    } else if (!data.session) {
+      toast.success("Account created! Please check your email to verify your account.");
+      navigate({ to: `/login` });
     } else {
       toast.success("Workspace created successfully!");
       navigate({ to: `/dashboard` });
